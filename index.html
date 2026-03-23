@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCC Connect - Community Resource Directory</title>
+    <!-- Tailwind CSS for modern, responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for demand analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase SDKs for secure data logging -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vcc-connect-alachua';
+
+        window.db = db;
+        window.auth = auth;
+        window.appId = appId;
+        window.firestoreUtils = { collection, addDoc, onSnapshot, query };
+
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            window.currentUser = user;
+            if (user && window.onUserReady) window.onUserReady(user);
+        });
+
+        initAuth();
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#233783', 
+                        primaryLight: '#3b51a3', 
+                        secondary: '#475569', 
+                        accent: '#fbd216', 
+                        danger: '#ef4444', 
+                        bgSoft: '#f8fafc', 
+                        surface: '#ffffff',
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; overflow-x: hidden; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin: 0 auto; height: 300px; }
+        .card-hover { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1); border-color: #fbd216; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .tab-active { background-color: #fbd216 !important; color: #233783 !important; font-weight: 800 !important; }
+        #copy-notification { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2000; }
+        .break-all-content { word-break: break-all; overflow-wrap: break-word; }
+
+        /* PRINT STYLES */
+        @media print {
+            @page { margin: 1in; size: letter portrait; }
+            body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; }
+            nav, .no-print, #dashboard-view, #assessment-view, .emergency-banner, #history-view, #print-action-btn, #instr-line, #install-guide { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: none !important; }
+            #referral-plan-results { display: block !important; visibility: visible !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+            #plan-to-print { 
+                display: block !important;
+                visibility: visible !important;
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 6.5in !important; 
+                margin: 0 auto !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+            #pdf-header { 
+                display: flex !important; 
+                flex-direction: column !important; 
+                align-items: center !important; 
+                text-align: center !important;
+                border-bottom: 3px solid #233783 !important;
+                padding-bottom: 20px !important;
+            }
+            .clinical-data-block { 
+                display: flex !important;
+                flex-direction: row !important; 
+                justify-content: center !important; 
+                width: 100% !important;
+                margin-top: 15px !important;
+                gap: 20px !important;
+            }
+            .data-pill {
+                display: inline-block !important;
+                background: #f8fafc !important;
+                border-left: 4px solid #fbd216 !important;
+                padding: 8px 15px !important;
+            }
+            .office-info-print { 
+                display: block !important;
+                text-align: center !important; 
+                width: 100% !important; 
+                margin-top: 10px !important;
+            }
+            .agency-card { page-break-inside: avoid !important; border-left: 8px solid #233783 !important; margin-bottom: 2rem !important; display: block !important; }
+            .bg-slate-50 { background-color: #f8fafc !important; }
+            .bg-blue-50\/50 { background-color: #eff6ff !important; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-accent selection:text-primary text-center">
+
+    <div id="copy-notification" class="bg-primary text-white px-8 py-4 rounded-full shadow-2xl font-bold text-sm animate-fade-in">
+        ✅ VCC Connect Link Copied!
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-primary text-white shadow-xl sticky top-0 z-50 border-b-4 border-accent no-print" role="navigation">
+        <div class="container mx-auto px-4 py-2.5 flex flex-col md:flex-row justify-center items-center gap-4 text-center">
+            <a href="https://villagecounselingcenter.net/" target="_blank" class="flex items-center hover:opacity-90 transition transform hover:scale-[1.01]" aria-label="VCC Home">
+                <div class="flex flex-col justify-center text-center">
+                    <span class="text-2xl font-black tracking-tighter leading-none uppercase italic">VCC Connect</span>
+                    <span class="hidden lg:block text-accent text-[9px] uppercase tracking-[0.25em] mt-1 font-black">Community Resource Directory</span>
+                </div>
+            </a>
+            
+            <div class="flex flex-wrap justify-center space-x-2 sm:space-x-3 items-center">
+                <button onclick="copyAppLink()" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-xs font-bold transition border border-white/10 text-white">
+                    🔗 Copy Link
+                </button>
+                <a href="https://villagecounselingcenter.net/referrals/" target="_blank" class="bg-accent hover:brightness-110 px-4 py-2 rounded-full text-xs font-extrabold transition text-primary shadow-lg uppercase tracking-wide">
+                    VCC Referral Form
+                </a>
+                <div class="flex bg-black/20 p-1 rounded-full border border-white/5">
+                    <button onclick="switchView('dashboard')" id="nav-dashboard" class="px-4 sm:px-5 py-2 rounded-full transition text-[11px] font-black uppercase tracking-tight tab-active">Search</button>
+                    <button onclick="switchView('assessment')" id="nav-assessment" class="px-4 sm:px-5 py-2 rounded-full transition text-[11px] font-black uppercase tracking-tight text-white/70 hover:text-white">Assessment</button>
+                    <button onclick="switchView('history')" id="nav-history" class="px-4 sm:px-5 py-2 rounded-full transition text-[11px] font-black uppercase tracking-tight text-white/70 hover:text-white">Logs</button>
+                </div>
+                <button onclick="openCrisisModal()" class="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-full text-[11px] font-black transition shadow-lg text-white uppercase tracking-widest border border-red-500/50">
+                    Crisis Resources
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Emergency Banner -->
+    <div class="emergency-banner bg-amber-50 border-b border-amber-200 text-amber-900 text-[11px] py-3 px-4 text-center font-bold leading-tight shadow-sm italic uppercase tracking-tighter text-center" role="alert">
+        ⚠️ <strong>LEGAL DISCLAIMER:</strong> Village Counseling Center of Gainesville, Inc. (VCC) Connect is a passive informational tool. VCC expressly disclaims all liability for the conduct, services, or eligibility requirements of any third-party agency listed. Use constitutes formal assumption of all risk. For immediate emergencies, dial 9-1-1.
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-7xl text-center">
+
+        <!-- SEARCH VIEW -->
+        <div id="dashboard-view" class="space-y-8 animate-fade-in text-center">
+            
+            <!-- Install Guide (Persistent Card) -->
+            <div id="install-guide" class="w-full bg-white rounded-3xl shadow-xl p-8 border-l-[12px] border-accent text-left no-print">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex-grow">
+                        <h3 class="text-primary font-black text-2xl uppercase tracking-tighter mb-2">📲 Install VCC Connect App</h3>
+                        <p class="text-slate-500 font-semibold mb-6">Access the Alachua Resource Directory with one tap from your phone's home screen.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                            <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100">
+                                <p class="font-black text-primary mb-3 uppercase tracking-widest text-[10px]">iPhone / iOS (Safari)</p>
+                                <ol class="list-decimal ml-4 space-y-1.5 text-slate-600 font-medium">
+                                    <li>Open this page in the <strong>Safari</strong> browser.</li>
+                                    <li>Tap the <strong>Share</strong> button (square with arrow).</li>
+                                    <li>Select <strong>"Add to Home Screen"</strong> from the menu.</li>
+                                    <li>Tap <strong>"Add"</strong> in the top right.</li>
+                                </ol>
+                            </div>
+                            <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100">
+                                <p class="font-black text-primary mb-3 uppercase tracking-widest text-[10px]">Android (Chrome)</p>
+                                <ol class="list-decimal ml-4 space-y-1.5 text-slate-600 font-medium">
+                                    <li>Open this page in the <strong>Chrome</strong> browser.</li>
+                                    <li>Tap the <strong>three dots</strong> (⋮) menu icon.</li>
+                                    <li>Select <strong>"Install app"</strong> or <strong>"Add to Home Screen."</strong></li>
+                                    <li>Follow the prompt to confirm.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="w-full bg-gradient-to-br from-primary to-primaryLight rounded-3xl p-10 flex flex-col items-center justify-center gap-8 shadow-2xl border-b-8 border-accent relative overflow-hidden text-center">
+                <div class="flex-grow text-center z-10">
+                    <h2 class="text-white font-black text-4xl mb-4 tracking-tighter">Needs Assessment Tool</h2>
+                    <p class="text-blue-100 text-lg max-w-3xl font-medium leading-snug mx-auto">
+                        Identify your family's specific needs below to instantly generate a personalized list of supportive resources and community agencies throughout Alachua County.
+                    </p>
+                </div>
+                <button onclick="switchView('assessment')" class="z-10 whitespace-nowrap bg-accent hover:brightness-105 text-primary font-black py-6 px-16 rounded-2xl shadow-2xl transition transform hover:scale-[1.03] active:scale-95 text-base uppercase tracking-[0.2em] border-b-4 border-primary/20">
+                    Begin Assessment
+                </button>
+            </div>
+
+            <div class="w-full bg-white rounded-xl shadow-xl p-8 border-t-8 border-primary text-center">
+                <div class="flex flex-col items-center mb-8 gap-6 text-center text-center">
+                    <div class="text-center">
+                        <h1 class="text-3xl font-black text-primary tracking-tighter mb-1 text-center">Community Resource Directory</h1>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 text-center">Providing "Help and Hope" to Alachua Families</p>
+                    </div>
+                    <div class="relative w-full md:w-2/3 lg:w-1/2">
+                        <label for="global-search" class="sr-only">Search resources</label>
+                        <input type="text" id="global-search" oninput="renderResources()" placeholder="Search 'food', 'rent', 'pediatric', 'legal'..." 
+                               class="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-8 focus:ring-primary/5 focus:border-primary transition-all shadow-inner outline-none text-center">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">🔍</span>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 justify-center" id="category-filters"></div>
+            </div>
+            
+            <div id="resource-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-slide-up text-left"></div>
+        </div>
+
+        <!-- ASSESSMENT VIEW -->
+        <div id="assessment-view" class="hidden space-y-8 animate-fade-in text-center">
+            <div class="bg-white rounded-2xl shadow-2xl border-t-8 border-primary overflow-hidden">
+                <div class="bg-slate-50 p-8 flex flex-col md:flex-row justify-between items-center border-b gap-4">
+                    <div class="text-center md:text-left text-left">
+                        <h2 class="text-2xl font-black text-primary tracking-tighter text-left">Needs Assessment Tool</h2>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-tight mt-1 text-left">Please select the categories and specific needs that apply to your family. When finished, scroll to the bottom to generate your personalized resource list.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label for="client-id" class="text-xs font-bold text-slate-500 uppercase">Client Name or ID:</label>
+                        <input type="text" id="client-id" placeholder="Optional" class="bg-white border-2 border-slate-200 text-primary font-black rounded-lg px-4 py-2 w-48 focus:ring-4 focus:ring-primary/10 outline-none shadow-sm text-center">
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left" id="assessment-form"></div>
+                    <div class="mt-10 flex flex-wrap justify-center md:justify-end gap-4 border-t pt-8">
+                        <button onclick="resetAssessment()" class="bg-slate-50 hover:bg-slate-100 text-slate-400 font-black py-4 px-10 rounded-2xl transition-all text-xs uppercase tracking-widest border border-slate-200">🔄 Reset Form</button>
+                        <button onclick="submitAndGeneratePlan()" id="submit-btn" class="bg-primary hover:bg-primaryLight text-white font-black py-4 px-12 rounded-2xl shadow-2xl transition-all transform hover:scale-[1.02] active:scale-95 text-xs uppercase tracking-widest">Generate List of Resources</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESULTS VIEW -->
+            <div id="referral-plan-results" class="hidden mt-10 max-w-4xl mx-auto text-center">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 no-print text-center">
+                    <h3 class="text-lg font-black text-primary uppercase tracking-widest border-l-8 border-accent pl-4 text-left">Alachua County Resources</h3>
+                    <button onclick="triggerPrint()" id="print-action-btn" class="bg-primary hover:bg-primaryLight text-white font-black py-3 px-8 rounded-xl shadow-xl transition transform hover:scale-[1.02] active:scale-95 text-xs uppercase tracking-widest flex items-center gap-3 text-center">
+                        <span>🖨️</span> Print Resource List
+                    </button>
+                </div>
+
+                <div id="instr-line" class="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6 text-center text-primary font-bold text-sm shadow-sm flex items-center justify-center gap-3 no-print text-center">
+                    <span class="text-xl">ℹ️</span>
+                    <span>You may click on any phone number or website address below to connect with the resource directly.</span>
+                </div>
+                
+                <div id="plan-to-print" class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden text-left p-6 md:p-10 text-left text-left">
+                    <div id="pdf-header" class="mb-10 text-center border-b-4 border-primary pb-8 text-center text-center">
+                        <h1 class="text-primary font-black text-4xl uppercase tracking-tighter leading-none mb-1 text-center text-center">Village Counseling Center</h1>
+                        <p class="text-primaryLight text-sm italic font-bold mb-6 text-center text-center">"Help and Hope for Children and Families"</p>
+                        
+                        <div class="clinical-data-block flex justify-center gap-8 text-center text-center text-center">
+                            <div class="data-pill bg-slate-50 p-4 rounded-xl border-l-[6px] border-accent text-left min-w-[140px] text-left text-left">
+                                <p class="text-[9px] text-slate-400 font-bold uppercase mb-0.5 text-left text-left text-left text-left text-left">Client Name or ID</p>
+                                <p id="result-client-id" class="text-lg text-primary font-black uppercase leading-none tracking-tight text-left"></p>
+                            </div>
+                            <div class="data-pill bg-slate-50 p-4 rounded-xl border-l-[6px] border-accent text-left min-w-[140px] text-left text-left text-left text-left text-left">
+                                <p class="text-[9px] text-slate-400 font-bold uppercase mb-0.5 text-left text-left text-left text-left text-left">Generated On</p>
+                                <p id="result-date" class="text-lg text-primary font-black uppercase leading-none tracking-tight text-left"></p>
+                            </div>
+                        </div>
+
+                        <div class="office-info-print text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-normal text-center text-center text-center text-center text-center">
+                            <p class="text-slate-900 text-xs font-black text-center text-center">Gainesville Office</p>
+                            <p class="text-center text-center text-center">3919 W Newberry Road, Suite 5, Gainesville, FL 32607</p>
+                            <p class="text-primary text-sm font-black mt-1 text-center text-center text-center text-center">Office: <a href="tel:3523738189" class="hover:underline text-center">(352) 373-8189</a> — <a href="https://villagecounselingcenter.net" target="_blank" class="underline decoration-accent text-center text-center text-center">villagecounselingcenter.net</a></p>
+                        </div>
+                    </div>
+                    
+                    <div id="plan-grid" class="flex flex-col gap-6 text-left"></div>
+                    
+                    <div class="mt-12 border-t-2 border-slate-100 pt-8 text-center text-center">
+                        <h4 class="text-[11px] text-slate-500 font-black uppercase tracking-[0.2em] mb-3 border-b border-accent inline-block text-center text-center text-center">NOTICE, LIMITATION OF LIABILITY & RELEASE</h4>
+                        <p class="text-[9px] text-slate-400 leading-relaxed text-justify font-semibold italic text-center">
+                            This resource list is provided by Village Counseling Center of Gainesville, Inc. (VCC) as an informational reference only. VCC does not endorse, supervise, or assume liability for the services, conduct, or eligibility requirements of the third-party agencies listed. By using this tool, the recipient assumes all risk and agrees to indemnify and hold VCC harmless from any claims or damages arising from the actions or omissions of these agencies. Verification of hours, locations, and specific requirements remains the sole responsibility of the user.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORY VIEW -->
+        <div id="history-view" class="hidden space-y-6 animate-fade-in text-center text-center text-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-center text-center">
+                <div class="bg-white rounded-3xl shadow-2xl p-10 border-t-[12px] border-slate-300 text-center text-center text-center text-center">
+                    <h2 class="text-2xl font-black text-primary text-center mb-8 uppercase tracking-[0.2em] text-center text-center text-center">Demand Analytics</h2>
+                    <div class="chart-container text-center text-center text-center"><canvas id="trendChart"></canvas></div>
+                </div>
+                <div class="bg-white rounded-3xl shadow-2xl p-10 border-t-[12px] border-primary text-left text-left text-left text-left">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-black text-primary uppercase tracking-[0.2em] text-left text-left text-left">Staff Logs</h2>
+                        <button onclick="lockHistory()" class="bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-danger p-2 rounded-lg transition border border-slate-200 text-xs font-bold text-center">🔒 Lock</button>
+                    </div>
+                    <div class="overflow-y-auto max-h-[450px] border border-slate-100 rounded-xl text-left" id="history-list"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CRISIS MODAL -->
+    <div id="crisis-modal" class="modal no-print" role="dialog" aria-labelledby="crisis-title">
+        <div class="bg-white mx-auto my-16 max-w-3xl rounded-3xl shadow-2xl overflow-hidden border-t-[12px] border-red-600 animate-slide-up text-left text-left text-left text-left text-left">
+            <div class="bg-red-50 p-10 flex justify-between items-center border-b text-left">
+                <div>
+                    <h2 id="crisis-title" class="text-3xl font-black text-red-600 uppercase tracking-tighter text-left text-left text-left text-left">🚨 Crisis Resources</h2>
+                    <p class="text-red-800/60 font-bold uppercase tracking-widest text-xs mt-1 text-left text-left text-left">Emergency Assistance Hub</p>
+                </div>
+                <button onclick="closeCrisisModal()" class="text-slate-300 hover:text-slate-500 transition text-4xl font-light text-center" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="p-10 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div class="bg-white p-5 rounded-2xl border-2 border-red-50 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left">Alachua Crisis Center</h3>
+                        <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left">24/7 Phone counseling, suicide support, and face-to-face intervention.</p>
+                    </div>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left">📞 <a href="tel:3522646789" class="hover:underline text-left text-left">(352) 264-6789</a></p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left">
+                    <div>
+                        <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left text-left text-left">Peaceful Paths (DV)</h3>
+                        <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left text-left">24/7 Domestic Violence helpline, safety planning, and emergency shelter.</p>
+                    </div>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left">📞 <a href="tel:3523778255" class="hover:underline text-left text-left text-left">(352) 377-8255</a></p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left text-left">
+                    <div>
+                        <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left text-left text-left text-left">Family Promise</h3>
+                        <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left text-left text-left">Immediate shelter coordination and support for homeless families with kids.</p>
+                    </div>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left text-left">📞 <a href="tel:3523782030" class="hover:underline text-left text-left text-left text-left text-left">(352) 378-2030</a></p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left text-left text-left">
+                    <div>
+                        <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left text-left text-left text-left">Meridian Access Center</h3>
+                        <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left text-left text-left text-left">24/7 Clinical intake for mental health crisis, detox, and Baker Act stabilization.</p>
+                    </div>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left text-left text-left">📞 <a href="tel:3523745600" class="hover:underline text-left text-left text-left text-left text-left text-left text-left">(352) 374-5600</a></p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 col-span-1 md:col-span-2 flex items-center justify-between shadow-inner text-left text-left text-left text-left text-left">
+                    <div>
+                        <h3 class="font-black text-primary uppercase text-sm mb-1 tracking-[0.1em] text-left text-left text-left text-left text-left">General Help (United Way)</h3>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left">Resource Connection Center</p>
+                    </div>
+                    <p class="text-4xl font-black text-primary tracking-tighter text-right text-right">Dial <a href="tel:211" class="hover:underline">2-1-1</a></p>
+                </div>
+            </div>
+            <div class="bg-slate-50 p-8 text-center border-t border-slate-100 text-center text-center text-center text-center text-center text-center text-center">
+                <button onclick="closeCrisisModal()" class="bg-primary text-white font-black py-4 px-16 rounded-2xl text-xs uppercase tracking-[0.3em] transition-all shadow-xl hover:brightness-110 active:scale-95 text-center text-center text-center text-center text-center text-center text-center">Dismiss Hub</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal no-print" role="dialog" aria-labelledby="auth-title">
+        <div class="bg-white mx-auto my-32 max-w-sm rounded-xl shadow-2xl p-10 text-center animate-slide-up border-b-8 border-primary text-center text-center text-center text-center text-center">
+            <h2 id="auth-title" class="text-xl font-black text-primary mb-2 uppercase text-center text-center text-center text-center text-center text-center">Agency Access</h2>
+            <p class="text-slate-400 text-sm font-bold mb-8 uppercase tracking-widest text-center text-center text-center text-center text-center">Restricted Logs View</p>
+            <input type="password" id="history-password" aria-label="Enter agency password" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl mb-6 text-center text-lg outline-none focus:border-primary transition text-center text-center text-center">
+            <div class="flex gap-4 text-center text-center text-center text-center text-center">
+                <button onclick="closePasswordModal()" class="flex-1 px-4 py-4 bg-slate-100 text-slate-500 rounded-xl font-black uppercase text-xs transition hover:bg-slate-200 text-center text-center text-center text-center">Cancel</button>
+                <button onclick="checkPassword()" class="flex-1 px-4 py-4 bg-primary text-white rounded-xl font-black uppercase text-xs transition shadow-lg hover:brightness-110 text-center text-center text-center text-center">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const categories = [
+            { id: 'housing_fin', name: 'Housing & Financial', icon: '🏠', color: 'bg-blue-50 text-blue-800 border-blue-200', needs: ["Assistance with past-due rent or mortgage", "Help with utility bills (electric, water, gas)", "Home weatherization/Energy efficiency", "Help applying for disability, social security benefits, TANF, Unemployment, etc.", "Disability appeals", "Help paying for childcare or VPK (e.g., school readiness vouchers)", "Support for pregnancy or families with infants (0-3 years old)"] },
+            { id: 'food_supplies', name: 'Food & Supplies', icon: '🍎', color: 'bg-green-50 text-green-800 border-green-200', needs: ["Access to a food pantry or emergency food assistance", "Resource Centers (Pantries)", "Nutrition education and low-cost meal planning", "Diapers, wipes, or baby formula", "Clothing for children or adults"] },
+            { id: 'health_advocacy', name: 'Health & Advocacy', icon: '🩺', color: 'bg-indigo-50 text-indigo-800 border-indigo-200', needs: ["Neurodiversity/Autism support", "Developmental delay screenings (age 0-3)", "Free or mobile medical clinic", "Rural healthcare access", "Tobacco cessation support", "Dental care for children", "Vision exams or glasses assistance"] },
+            { id: 'mental_health', name: 'Mental Health & Recovery', icon: '🧠', color: 'bg-purple-50 text-purple-800 border-purple-200', needs: ["Mental health crisis and stabilization", "Maternal mental health (postpartum)", "Free crisis counseling", "Substance use prevention (youth)", "Trauma, EMDR, or Play Therapy", "Sexual abuse treatment program (SATP)", "Mental health support groups"] },
+            { id: 'edu_career', name: 'Education & Support', icon: '📚', color: 'bg-amber-50 text-amber-800 border-amber-100', needs: ["Free after-school tutoring (Title 1)", "Literacy tutoring", "IEP or 504 plan school support", "Adult education or GED classes", "Library services/ESOL"] },
+            { id: 'safety_advocacy', name: 'Safety & Advocacy', icon: '🛡️', color: 'bg-red-50 text-red-800 border-red-100', needs: ["Domestic violence assistance", "Child advocacy (survivors of abuse)", "Child welfare medical evaluations", "Family preservation navigators", "Civil legal aid (evictions/family law)", "Youth crisis shelter (10-17)", "Underserved/Spanish Support"] },
+            { id: 'trans_access', name: 'Transportation & Access', icon: '🚌', color: 'bg-slate-50 text-slate-800 border-slate-200', needs: ["Vehicle repair assistance", "Transportation disadvantaged door-to-door rides", "Bicycle access for commuting", "Medicaid transportation assistance"] }
+        ];
+
+        const resources = [
+            // Housing & Financial
+            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Alachua County Social Services', contact: '(352) 264-6750', link: 'https://alachuacounty.us/Depts/CSS/SocialServices/Pages/SocialServices.aspx', guide: 'Limited assistance every 2 years. Documentation: Residency proof + 60 days income.' },
+            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Catholic Charities Bureau', contact: '(352) 372-0294', link: 'https://www.catholiccharitiesgainesville.org/', guide: 'Call Friday at 9AM sharp for appointment. Slots typically fill within minutes.' },
+            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Salvation Army', contact: '(352) 376-1743', link: 'https://salvationarmyflorida.org/gainesville/', guide: 'Seasonal rent assistance. Verification of emergency (e.g. eviction notice) required.' },
+            { cat: 'housing_fin', need: 'Help with utility bills (electric, water, gas)', agency: 'GCM Utility Assistance', contact: '(352) 372-8646', link: 'https://www.gcmhelps.org/', guide: 'GRU help for shut-off notice. Tuesdays 8:00 AM - 8:30 AM only.' },
+            { cat: 'housing_fin', need: 'Home weatherization/Energy efficiency', agency: 'Community Weatherization Coalition', contact: '(352) 450-4965', link: 'https://communityweatherization.org/', guide: 'Free energy audits and minor repairs for low-income residents.' },
+            { cat: 'housing_fin', need: 'Help applying for disability, social security benefits, TANF, Unemployment, etc.', agency: 'Florida DCF / MyACCESS', contact: '(850) 300-4323', link: 'https://www.myflorida.com/accessflorida/', guide: 'Primary state portal for SNAP, TANF, Medicaid. Local office: 1000 NE 16th Ave.' },
+            { cat: 'housing_fin', need: 'Disability appeals', agency: 'Center for Independent Living', contact: '(352) 378-7474', link: 'https://cilncf.org/', guide: 'Advocacy for SSI/SSDI application and appeal processes.' },
+
+            // Food & Supplies
+            { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'Bread of the Mighty Food Bank', contact: '(352) 336-0839', link: 'https://breadofthemighty.org/', guide: 'County food hub. Real-time map of mobile pantries on website.' },
+            { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'St. Francis House', contact: '(352) 378-9079', link: 'https://stfrancishousegnv.org/', guide: 'Hot soup kitchen at 413 S. Main St. No income proof required for daily meals.' },
+            { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'Gainesville Free Grocery Store', contact: '(352) 214-4112', link: 'https://www.facebook.com/GainesvilleFreeGroceryStore/', guide: 'Dignity-focused user choice pantry in SW Gainesville.' },
+            { cat: 'food_supplies', need: 'Resource Centers (Pantries)', agency: 'Library Partnership (NE)', contact: '(352) 334-0160', link: 'https://pfsf.org/', guide: 'NE GNV Hub. On-site food pantry and regular diaper distribution.' },
+            { cat: 'food_supplies', need: 'Resource Centers (Pantries)', agency: 'SWAG Family Center (SW)', contact: '(352) 505-6823', link: 'https://swagherenow.org/', guide: 'SW GNV Hub. Integrated community services and clothing closet.' },
+
+            // Health & Advocacy
+            { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Equal Access Clinic', contact: '(352) 273-9425', link: 'https://equalaccess.med.ufl.edu/', guide: 'Student-run free clinic rotating nightly (Mon-Thurs). No insurance needed.' },
+            { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Rahma Mercy Clinic', contact: '(352) 414-7493', link: 'https://rahmaclinic.com/', guide: 'Free primary and specialty care for uninsured/low-income residents.' },
+            { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Helping Hands Clinic', contact: '(352) 519-5542', link: 'https://hhgnv.org/', guide: 'Care for homeless/underserved. M/Th evenings at First United Methodist.' },
+            { cat: 'health_advocacy', need: 'Rural healthcare access', agency: 'ACORN Clinic', contact: '(352) 485-1133', link: 'https://acornclinic.org/', guide: 'Sliding scale medical/dental for rural families in North Alachua.' },
+            { cat: 'health_advocacy', need: 'Tobacco cessation support', agency: 'Tobacco Free Alachua', contact: '(352) 334-7914', link: 'http://tobaccofreealachua.org/', guide: 'Free resources and support groups to quit smoking or vaping.' },
+            { cat: 'health_advocacy', need: 'Dental care for children', agency: 'UF Saving Smiles', contact: '(352) 273-5971', link: 'https://dental.ufl.edu/', guide: 'Preventive cleanings at Title 1 school clinics.' },
+
+            // Mental Health & Recovery
+            { cat: 'mental_health', need: 'Mental health crisis and stabilization', agency: 'Meridian Access Center', contact: '(352) 374-5600', link: 'https://www.mbhci.org/', guide: '24/7 Baker Act/detox intake and behavioral health triage.' },
+            { cat: 'mental_health', need: 'Free crisis counseling', agency: 'Alachua Crisis Center', contact: '(352) 264-6789', link: 'https://www.alachuacounty.us/depts/css/crisiscenter/', guide: 'Free counselor support. Phone counseling and in-person sessions.' },
+            { cat: 'mental_health', need: 'Trauma, EMDR, or Play Therapy', agency: 'Village Counseling Center (VCC)', contact: '(352) 373-8189', link: 'https://villagecounselingcenter.net/', guide: 'Clinical trauma experts. Grant slots for child welfare often available.' },
+
+            // Safety & Advocacy
+            { cat: 'safety_advocacy', need: 'Domestic violence assistance', agency: 'Peaceful Paths', contact: '(352) 377-8255', link: 'https://www.peacefulpaths.org/', guide: '24/7 safety helpline, residential shelter, and survivor advocacy.' },
+            { cat: 'safety_advocacy', need: 'Civil legal aid (evictions/family law)', agency: 'Three Rivers Legal Services', contact: '(866) 256-8091', link: 'https://www.trls.org/', guide: 'Free civil legal help (evictions, injunctions, welfare advocacy).' },
+            { cat: 'safety_advocacy', need: 'Underserved/Spanish Support', agency: 'Project SALUD (RWHP)', contact: '(352) 575-8024', link: 'https://rwhp.org/project-salud.html', guide: 'Spanish-language navigation for healthcare and community services.' }
+        ];
+
+        let selectedNeeds = new Set();
+        let historyData = [];
+        let isHistoryUnlocked = false;
+        const AGENCY_PWD = "VCC123";
+
+        function switchView(v) {
+            if (v === 'history' && !isHistoryUnlocked) { openPasswordModal(); return; }
+            ['dashboard', 'assessment', 'history'].forEach(id => {
+                const element = document.getElementById(id + '-view');
+                if (element) element.classList.add('hidden');
+            });
+            const viewElement = document.getElementById(v + '-view');
+            if (viewElement) viewElement.classList.remove('hidden');
+            
+            ['nav-dashboard', 'nav-assessment', 'nav-history'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('tab-active');
+            });
+            const activeBtn = document.getElementById('nav-' + v);
+            if (activeBtn) activeBtn.classList.add('tab-active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openCrisisModal() { document.getElementById('crisis-modal').style.display = 'block'; }
+        function closeCrisisModal() { document.getElementById('crisis-modal').style.display = 'none'; }
+        function openPasswordModal() { document.getElementById('password-modal').style.display = 'block'; document.getElementById('history-password').value = ''; }
+        function closePasswordModal() { document.getElementById('password-modal').style.display = 'none'; }
+        
+        function checkPassword() {
+            if (document.getElementById('history-password').value === AGENCY_PWD) { isHistoryUnlocked = true; closePasswordModal(); switchView('history'); }
+        }
+
+        function copyAppLink() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            const note = document.getElementById('copy-notification');
+            note.style.display = 'block';
+            setTimeout(() => { note.style.display = 'none'; }, 2000);
+        }
+
+        function resetAssessment() {
+            document.getElementById('client-id').value = '';
+            selectedNeeds.clear();
+            document.querySelectorAll('#assessment-form input[type="checkbox"]').forEach(c => c.checked = false);
+            document.getElementById('referral-plan-results').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setCat(c) { activeCat = c; renderResources(); }
+        let activeCat = 'all';
+
+        function renderCategoryFilters() {
+            const container = document.getElementById('category-filters');
+            container.innerHTML = `<button onclick="setCat('all')" class="px-5 py-2 rounded-full transition-all text-xs font-bold border-2 border-primary shadow-sm bg-white hover:bg-slate-50 uppercase tracking-tighter">All</button>`;
+            categories.forEach(c => {
+                container.innerHTML += `<button onclick="setCat('${c.id}')" class="px-5 py-2 rounded-full transition-all text-xs font-bold border-2 border-primary shadow-sm bg-white hover:bg-primary/5 uppercase tracking-tighter text-center">${c.icon} ${c.name}</button>`;
+            });
+        }
+
+        function getTelLink(phone) {
+            return `tel:${phone.replace(/\D/g, '')}`;
+        }
+
+        function renderResources() {
+            const queryText = document.getElementById('global-search').value.toLowerCase();
+            const grid = document.getElementById('resource-grid');
+            const filtered = resources.filter(r => {
+                const cat = categories.find(c => c.id === r.cat);
+                const matchesCat = activeCat === 'all' || r.cat === activeCat;
+                const matchesQuery = r.agency.toLowerCase().includes(queryText) || r.need.toLowerCase().includes(queryText);
+                return matchesCat && matchesQuery;
+            });
+
+            grid.innerHTML = filtered.map(r => {
+                const cat = categories.find(c => c.id === r.cat);
+                return `
+                <div class="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden card-hover flex flex-col h-full text-left">
+                    <div class="p-6 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="${cat.color} px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border">${cat.name}</span>
+                            <a href="${r.link}" target="_blank" class="text-primary hover:text-accent text-xl transition">🌐</a>
+                        </div>
+                        <h3 class="text-lg font-black text-primary leading-tight mb-1 text-left">${r.agency}</h3>
+                        <p class="text-[10px] font-semibold text-secondary mb-1.5 leading-tight">${r.need}</p>
+                        <div class="text-[9px] text-gray-500 flex flex-col gap-0.5 italic text-left">
+                           <span>📞 <a href="${getTelLink(r.contact)}" class="hover:underline font-bold text-primary">${r.contact}</a></span>
+                           <span class="break-all">🌐 <a href="${r.link}" target="_blank" class="hover:underline text-primary/70">${r.link}</a></span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50/30 p-2 border-t border-blue-50 text-[9px] text-left">
+                        <p class="text-primary leading-tight"><span class="font-bold uppercase text-[7px] text-slate-400">Clinical Note:</span> ${r.guide}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderAssessmentForm() {
+            const form = document.getElementById('assessment-form');
+            form.innerHTML = '';
+            categories.forEach(cat => {
+                form.innerHTML += `
+                <div class="mb-2 bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 text-left transition hover:border-accent">
+                    <h4 class="font-black text-primary text-base mb-4 border-b-2 pb-2 uppercase tracking-widest flex items-center gap-2">
+                        <span class="bg-white p-1 rounded shadow-sm">${cat.icon}</span> ${cat.name}
+                    </h4>
+                    <div class="space-y-2">
+                        ${cat.needs.map(n => `
+                            <label class="flex items-start text-base p-1 rounded hover:bg-white hover:shadow-sm cursor-pointer transition">
+                                <input type="checkbox" value="${n}" onchange="toggleNeed(this)" class="mt-1 mr-3 h-4 w-4 rounded text-primary border-slate-300 focus:ring-accent transition"> 
+                                <span class="leading-snug text-slate-700 font-semibold">${n}</span>
+                            </label>`).join('')}
+                    </div>
+                </div>`;
+            });
+        }
+
+        function toggleNeed(checkbox) { if(checkbox.checked) selectedNeeds.add(checkbox.value); else selectedNeeds.delete(checkbox.value); }
+
+        async function submitAndGeneratePlan() {
+            if (selectedNeeds.size === 0) return alert("Select needs first.");
+            const matching = resources.filter(r => selectedNeeds.has(r.need));
+            const nameValue = document.getElementById('client-id').value || "CLIENT REF";
+            
+            const results = document.getElementById('referral-plan-results');
+            const grid = document.getElementById('plan-grid');
+            
+            document.getElementById('result-client-id').innerText = nameValue;
+            document.getElementById('result-date').innerText = new Date().toLocaleDateString();
+
+            grid.innerHTML = matching.map(r => `
+                <div class="bg-white p-6 rounded-xl border-l-[8px] border-primary shadow-sm text-left mb-6 agency-card text-left">
+                    <div class="mb-3 text-left">
+                        <h4 class="font-black text-primary text-xl leading-tight uppercase tracking-tight mb-1">${r.agency}</h4>
+                        <div class="flex items-center gap-2 text-slate-500 font-bold uppercase text-[10px] tracking-widest">
+                            <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-600">Goal</span> ${r.need}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 text-left">
+                            <p class="text-[9px] text-primary/60 font-black uppercase mb-0.5">Contact Info</p>
+                            <p class="text-lg text-primary font-black tracking-tight"><a href="${getTelLink(r.contact)}" class="hover:underline">${r.contact}</a></p>
+                        </div>
+                        <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 overflow-hidden text-left">
+                            <p class="text-[9px] text-primary/60 font-black uppercase mb-0.5">Website</p>
+                            <a href="${r.link}" target="_blank" class="text-sm text-primary font-bold underline break-all-content">${r.link}</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 text-left">
+                        <p class="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Staff Guidance</p>
+                        <p class="text-sm text-slate-700 leading-relaxed font-medium italic break-all-content">"${r.guide}"</p>
+                    </div>
+                </div>`).join('');
+            
+            results.classList.remove('hidden');
+            results.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                if (window.db) {
+                    await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'assessments'), {
+                        clientId: nameValue, needs: Array.from(selectedNeeds), timestamp: new Date().toISOString()
+                    });
+                }
+            } catch (e) { console.error("Database error", e); }
+        }
+
+        function triggerPrint() {
+            window.focus();
+            window.print();
+        }
+
+        function setupHistoryListener() {
+            if (!window.db) return;
+            const q = window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'assessments');
+            window.firestoreUtils.onSnapshot(q, (snapshot) => {
+                historyData = snapshot.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                updateHistoryUI();
+                updateTrendChart();
+            }, (err) => console.error("Sync error", err));
+        }
+
+        function updateHistoryUI() {
+            const list = document.getElementById('history-list');
+            if (historyData.length === 0) { list.innerHTML = '<p class="text-gray-400 italic text-center py-4 text-[10px]">No data available.</p>'; return; }
+            list.innerHTML = historyData.map(h => `
+                <div class="border-b py-3 px-4 hover:bg-slate-50 transition border-gray-100 text-left">
+                    <div class="flex justify-between items-start">
+                        <span class="font-bold text-xs text-primary">${h.clientId}</span>
+                        <span class="text-[8px] text-gray-400 font-semibold uppercase tracking-tighter text-right">${new Date(h.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-0.5 mt-1">
+                        ${h.needs.map(n => `<span class="bg-blue-50 text-primary text-[8px] px-1 py-0.5 rounded border border-blue-100 font-medium">${n}</span>`).join('')}
+                    </div>
+                </div>`).join('');
+        }
+
+        function updateTrendChart() {
+            const allNeeds = historyData.flatMap(h => h.needs);
+            const freq = {};
+            allNeeds.forEach(n => freq[n] = (freq[n] || 0) + 1);
+            const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            const chartCanvas = document.getElementById('trendChart');
+            if (!chartCanvas) return;
+            if (window.trendChartInstance) window.trendChartInstance.destroy();
+            window.trendChartInstance = new Chart(chartCanvas.getContext('2d'), {
+                type: 'bar',
+                data: { labels: sorted.map(s => s[0].substring(0, 15) + '...'), datasets: [{ label: 'Frequency', data: sorted.map(s => s[1]), backgroundColor: '#233783', borderRadius: 2 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { stepSize: 1, font: { size: 9 } } }, y: { ticks: { font: { size: 9 } } } } }
+            });
+        }
+
+        window.onUserReady = (user) => { setupHistoryListener(); };
+        window.onload = () => { renderCategoryFilters(); renderResources(); renderAssessmentForm(); };
+    </script>
+</body>
+</html>
