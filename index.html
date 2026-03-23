@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for demand analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase SDKs for secure data logging -->
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -70,7 +70,6 @@
         #copy-notification { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2000; }
         .break-all-content { word-break: break-all; overflow-wrap: break-word; }
 
-        /* PRINT STYLES */
         @media print {
             @page { margin: 1in; size: letter portrait; }
             body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; }
@@ -133,12 +132,12 @@
             <a href="https://villagecounselingcenter.net/" target="_blank" class="flex items-center hover:opacity-90 transition transform hover:scale-[1.01]" aria-label="VCC Home">
                 <div class="flex flex-col justify-center text-center">
                     <span class="text-2xl font-black tracking-tighter leading-none uppercase italic">VCC Connect</span>
-                    <span class="hidden lg:block text-accent text-[9px] uppercase tracking-[0.25em] mt-1 font-black">Community Resource Directory</span>
+                    <span class="hidden lg:block text-accent text-[9px] uppercase tracking-[0.25em] mt-1 font-black text-center">Community Resource Directory</span>
                 </div>
             </a>
             
             <div class="flex flex-wrap justify-center space-x-2 sm:space-x-3 items-center">
-                <button onclick="copyAppLink()" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-xs font-bold transition border border-white/10 text-white">
+                <button onclick="copyAppLink()" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-xs font-bold transition border border-white/10 text-white" aria-label="Copy Link">
                     🔗 Copy Link
                 </button>
                 <a href="https://villagecounselingcenter.net/referrals/" target="_blank" class="bg-accent hover:brightness-110 px-4 py-2 rounded-full text-xs font-extrabold transition text-primary shadow-lg uppercase tracking-wide">
@@ -167,17 +166,17 @@
         <!-- SEARCH VIEW -->
         <div id="dashboard-view" class="space-y-8 animate-fade-in text-center">
             
-            <!-- Install Guide (Persistent Card) -->
-            <div id="install-guide" class="w-full bg-white rounded-3xl shadow-xl p-8 border-l-[12px] border-accent text-left no-print">
+            <!-- Install Guide (Centering Fix) -->
+            <div id="install-guide" class="w-full bg-white rounded-3xl shadow-xl p-8 border-l-[12px] border-accent text-left no-print mx-auto max-w-4xl">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div class="flex-grow">
                         <h3 class="text-primary font-black text-2xl uppercase tracking-tighter mb-2">📲 Install VCC Connect App</h3>
-                        <p class="text-slate-500 font-semibold mb-6">Access the Alachua Resource Directory with one tap from your phone's home screen.</p>
+                        <p class="text-slate-500 font-semibold mb-6">Access the Alachua Resource Directory with one tap from your home screen.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
                             <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100">
                                 <p class="font-black text-primary mb-3 uppercase tracking-widest text-[10px]">iPhone / iOS (Safari)</p>
                                 <ol class="list-decimal ml-4 space-y-1.5 text-slate-600 font-medium">
-                                    <li>Open this page in the <strong>Safari</strong> browser.</li>
+                                    <li>Open this page in <strong>Safari</strong> browser.</li>
                                     <li>Tap the <strong>Share</strong> button (square with arrow).</li>
                                     <li>Select <strong>"Add to Home Screen"</strong> from the menu.</li>
                                     <li>Tap <strong>"Add"</strong> in the top right.</li>
@@ -189,7 +188,7 @@
                                     <li>Open this page in the <strong>Chrome</strong> browser.</li>
                                     <li>Tap the <strong>three dots</strong> (⋮) menu icon.</li>
                                     <li>Select <strong>"Install app"</strong> or <strong>"Add to Home Screen."</strong></li>
-                                    <li>Follow the prompt to confirm.</li>
+                                    <li>Follow the prompt to confirm installation.</li>
                                 </ol>
                             </div>
                         </div>
@@ -198,10 +197,10 @@
             </div>
 
             <!-- CTA Section -->
-            <div class="w-full bg-gradient-to-br from-primary to-primaryLight rounded-3xl p-10 flex flex-col items-center justify-center gap-8 shadow-2xl border-b-8 border-accent relative overflow-hidden text-center">
+            <div class="w-full bg-gradient-to-br from-primary to-primaryLight rounded-3xl p-10 flex flex-col items-center justify-center gap-8 shadow-2xl border-b-8 border-accent relative overflow-hidden text-center mx-auto max-w-4xl">
                 <div class="flex-grow text-center z-10">
-                    <h2 class="text-white font-black text-4xl mb-4 tracking-tighter">Needs Assessment Tool</h2>
-                    <p class="text-blue-100 text-lg max-w-3xl font-medium leading-snug mx-auto">
+                    <h2 class="text-white font-black text-4xl mb-4 tracking-tighter text-center">Needs Assessment Tool</h2>
+                    <p class="text-blue-100 text-lg max-w-3xl font-medium leading-snug mx-auto text-center">
                         Identify your family's specific needs below to instantly generate a personalized list of supportive resources and community agencies throughout Alachua County.
                     </p>
                 </div>
@@ -210,7 +209,7 @@
                 </button>
             </div>
 
-            <div class="w-full bg-white rounded-xl shadow-xl p-8 border-t-8 border-primary text-center">
+            <div class="w-full bg-white rounded-xl shadow-xl p-8 border-t-8 border-primary text-center mx-auto max-w-4xl">
                 <div class="flex flex-col items-center mb-8 gap-6 text-center text-center">
                     <div class="text-center">
                         <h1 class="text-3xl font-black text-primary tracking-tighter mb-1 text-center">Community Resource Directory</h1>
@@ -226,18 +225,18 @@
                 <div class="flex flex-wrap gap-2 justify-center" id="category-filters"></div>
             </div>
             
-            <div id="resource-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-slide-up text-left"></div>
+            <div id="resource-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-slide-up text-left text-left"></div>
         </div>
 
         <!-- ASSESSMENT VIEW -->
         <div id="assessment-view" class="hidden space-y-8 animate-fade-in text-center">
-            <div class="bg-white rounded-2xl shadow-2xl border-t-8 border-primary overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-2xl border-t-8 border-primary overflow-hidden mx-auto max-w-6xl">
                 <div class="bg-slate-50 p-8 flex flex-col md:flex-row justify-between items-center border-b gap-4">
                     <div class="text-center md:text-left text-left">
                         <h2 class="text-2xl font-black text-primary tracking-tighter text-left">Needs Assessment Tool</h2>
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-tight mt-1 text-left">Please select the categories and specific needs that apply to your family. When finished, scroll to the bottom to generate your personalized resource list.</p>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 text-left">
                         <label for="client-id" class="text-xs font-bold text-slate-500 uppercase">Client Name or ID:</label>
                         <input type="text" id="client-id" placeholder="Optional" class="bg-white border-2 border-slate-200 text-primary font-black rounded-lg px-4 py-2 w-48 focus:ring-4 focus:ring-primary/10 outline-none shadow-sm text-center">
                     </div>
@@ -250,18 +249,18 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- RESULTS VIEW -->
             <div id="referral-plan-results" class="hidden mt-10 max-w-4xl mx-auto text-center">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 no-print text-center">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 no-print text-center text-center">
                     <h3 class="text-lg font-black text-primary uppercase tracking-widest border-l-8 border-accent pl-4 text-left">Alachua County Resources</h3>
-                    <button onclick="triggerPrint()" id="print-action-btn" class="bg-primary hover:bg-primaryLight text-white font-black py-3 px-8 rounded-xl shadow-xl transition transform hover:scale-[1.02] active:scale-95 text-xs uppercase tracking-widest flex items-center gap-3 text-center">
+                    <button onclick="triggerPrint()" id="print-action-btn" class="bg-primary hover:bg-primaryLight text-white font-black py-3 px-8 rounded-xl shadow-xl transition transform hover:scale-[1.02] active:scale-95 text-xs uppercase tracking-widest flex items-center gap-3 text-center text-center">
                         <span>🖨️</span> Print Resource List
                     </button>
                 </div>
 
                 <div id="instr-line" class="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6 text-center text-primary font-bold text-sm shadow-sm flex items-center justify-center gap-3 no-print text-center">
-                    <span class="text-xl">ℹ️</span>
+                    <span class="text-xl text-center">ℹ️</span>
                     <span>You may click on any phone number or website address below to connect with the resource directly.</span>
                 </div>
                 
@@ -272,26 +271,26 @@
                         
                         <div class="clinical-data-block flex justify-center gap-8 text-center text-center text-center">
                             <div class="data-pill bg-slate-50 p-4 rounded-xl border-l-[6px] border-accent text-left min-w-[140px] text-left text-left">
-                                <p class="text-[9px] text-slate-400 font-bold uppercase mb-0.5 text-left text-left text-left text-left text-left">Client Name or ID</p>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase mb-0.5 text-left text-left">Client Name or ID</p>
                                 <p id="result-client-id" class="text-lg text-primary font-black uppercase leading-none tracking-tight text-left"></p>
                             </div>
-                            <div class="data-pill bg-slate-50 p-4 rounded-xl border-l-[6px] border-accent text-left min-w-[140px] text-left text-left text-left text-left text-left">
-                                <p class="text-[9px] text-slate-400 font-bold uppercase mb-0.5 text-left text-left text-left text-left text-left">Generated On</p>
-                                <p id="result-date" class="text-lg text-primary font-black uppercase leading-none tracking-tight text-left"></p>
+                            <div class="data-pill bg-slate-50 p-4 rounded-xl border-l-[6px] border-accent text-left min-w-[140px] text-left text-left">
+                                <p class="text-[9px] text-slate-400 font-bold uppercase mb-0.5 text-left text-left text-left">Generated On</p>
+                                <p id="result-date" class="text-lg text-primary font-black uppercase leading-none tracking-tight text-left text-left"></p>
                             </div>
                         </div>
 
-                        <div class="office-info-print text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-normal text-center text-center text-center text-center text-center">
+                        <div class="office-info-print text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-normal text-center text-center text-center">
                             <p class="text-slate-900 text-xs font-black text-center text-center">Gainesville Office</p>
                             <p class="text-center text-center text-center">3919 W Newberry Road, Suite 5, Gainesville, FL 32607</p>
-                            <p class="text-primary text-sm font-black mt-1 text-center text-center text-center text-center">Office: <a href="tel:3523738189" class="hover:underline text-center">(352) 373-8189</a> — <a href="https://villagecounselingcenter.net" target="_blank" class="underline decoration-accent text-center text-center text-center">villagecounselingcenter.net</a></p>
+                            <p class="text-primary text-sm font-black mt-1 text-center text-center">Office: <a href="tel:3523738189" class="hover:underline text-center">(352) 373-8189</a> — <a href="https://villagecounselingcenter.net" target="_blank" class="underline decoration-accent text-center text-center">villagecounselingcenter.net</a></p>
                         </div>
                     </div>
                     
-                    <div id="plan-grid" class="flex flex-col gap-6 text-left"></div>
+                    <div id="plan-grid" class="flex flex-col gap-6 text-left text-left"></div>
                     
-                    <div class="mt-12 border-t-2 border-slate-100 pt-8 text-center text-center">
-                        <h4 class="text-[11px] text-slate-500 font-black uppercase tracking-[0.2em] mb-3 border-b border-accent inline-block text-center text-center text-center">NOTICE, LIMITATION OF LIABILITY & RELEASE</h4>
+                    <div class="mt-12 border-t-2 border-slate-100 pt-8 text-center text-center text-center">
+                        <h4 class="text-[11px] text-slate-500 font-black uppercase tracking-[0.2em] mb-3 border-b border-accent inline-block text-center text-center">NOTICE, LIMITATION OF LIABILITY & RELEASE</h4>
                         <p class="text-[9px] text-slate-400 leading-relaxed text-justify font-semibold italic text-center">
                             This resource list is provided by Village Counseling Center of Gainesville, Inc. (VCC) as an informational reference only. VCC does not endorse, supervise, or assume liability for the services, conduct, or eligibility requirements of the third-party agencies listed. By using this tool, the recipient assumes all risk and agrees to indemnify and hold VCC harmless from any claims or damages arising from the actions or omissions of these agencies. Verification of hours, locations, and specific requirements remains the sole responsibility of the user.
                         </p>
@@ -302,12 +301,12 @@
 
         <!-- HISTORY VIEW -->
         <div id="history-view" class="hidden space-y-6 animate-fade-in text-center text-center text-center">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-center text-center">
-                <div class="bg-white rounded-3xl shadow-2xl p-10 border-t-[12px] border-slate-300 text-center text-center text-center text-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-center text-center text-center">
+                <div class="bg-white rounded-3xl shadow-2xl p-10 border-t-[12px] border-slate-300 text-center text-center text-center">
                     <h2 class="text-2xl font-black text-primary text-center mb-8 uppercase tracking-[0.2em] text-center text-center text-center">Demand Analytics</h2>
                     <div class="chart-container text-center text-center text-center"><canvas id="trendChart"></canvas></div>
                 </div>
-                <div class="bg-white rounded-3xl shadow-2xl p-10 border-t-[12px] border-primary text-left text-left text-left text-left">
+                <div class="bg-white rounded-3xl shadow-2xl p-10 border-t-[12px] border-primary text-left text-left text-left">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-black text-primary uppercase tracking-[0.2em] text-left text-left text-left">Staff Logs</h2>
                         <button onclick="lockHistory()" class="bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-danger p-2 rounded-lg transition border border-slate-200 text-xs font-bold text-center">🔒 Lock</button>
@@ -328,41 +327,41 @@
                 </div>
                 <button onclick="closeCrisisModal()" class="text-slate-300 hover:text-slate-500 transition text-4xl font-light text-center" aria-label="Close modal">&times;</button>
             </div>
-            <div class="p-10 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                <div class="bg-white p-5 rounded-2xl border-2 border-red-50 shadow-sm flex flex-col justify-between">
+            <div class="p-10 grid grid-cols-1 md:grid-cols-2 gap-6 text-left text-left text-left">
+                <div class="bg-white p-5 rounded-2xl border-2 border-red-50 shadow-sm flex flex-col justify-between text-left text-left text-left">
                     <div>
                         <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left">Alachua Crisis Center</h3>
                         <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left">24/7 Phone counseling, suicide support, and face-to-face intervention.</p>
                     </div>
-                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left">📞 <a href="tel:3522646789" class="hover:underline text-left text-left">(352) 264-6789</a></p>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left">📞 <a href="tel:3522646789" class="hover:underline text-left text-left text-left">(352) 264-6789</a></p>
                 </div>
                 <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left">
                     <div>
                         <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left text-left text-left">Peaceful Paths (DV)</h3>
                         <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left text-left">24/7 Domestic Violence helpline, safety planning, and emergency shelter.</p>
                     </div>
-                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left">📞 <a href="tel:3523778255" class="hover:underline text-left text-left text-left">(352) 377-8255</a></p>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left">📞 <a href="tel:3523778255" class="hover:underline text-left text-left text-left text-left">(352) 377-8255</a></p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left text-left">
+                <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left">
                     <div>
                         <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left text-left text-left text-left">Family Promise</h3>
                         <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left text-left text-left">Immediate shelter coordination and support for homeless families with kids.</p>
                     </div>
-                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left text-left">📞 <a href="tel:3523782030" class="hover:underline text-left text-left text-left text-left text-left">(352) 378-2030</a></p>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left text-left">📞 <a href="tel:3523782030" class="hover:underline text-left text-left text-left text-left text-left text-left">(352) 378-2030</a></p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left text-left text-left">
+                <div class="bg-white p-6 rounded-3xl border-2 border-red-50 shadow-sm hover:border-red-600 transition group flex flex-col justify-between text-left text-left text-left">
                     <div>
-                        <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left text-left text-left text-left">Meridian Access Center</h3>
-                        <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left text-left text-left text-left">24/7 Clinical intake for mental health crisis, detox, and Baker Act stabilization.</p>
+                        <h3 class="font-black text-red-600 uppercase text-sm mb-1 text-left text-left text-left text-left">Meridian Access Center</h3>
+                        <p class="text-xs text-slate-500 font-bold leading-relaxed text-left text-left text-left text-left text-left">24/7 Clinical intake for mental health crisis, detox, and Baker Act stabilization.</p>
                     </div>
-                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left text-left text-left">📞 <a href="tel:3523745600" class="hover:underline text-left text-left text-left text-left text-left text-left text-left">(352) 374-5600</a></p>
+                    <p class="text-2xl font-black text-slate-800 mt-6 group-hover:text-red-600 transition text-left text-left text-left text-left text-left text-left text-left">(352) 374-5600</a></p>
                 </div>
                 <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 col-span-1 md:col-span-2 flex items-center justify-between shadow-inner text-left text-left text-left text-left text-left">
                     <div>
                         <h3 class="font-black text-primary uppercase text-sm mb-1 tracking-[0.1em] text-left text-left text-left text-left text-left">General Help (United Way)</h3>
-                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left">Resource Connection Center</p>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left">Resource Connection Center</p>
                     </div>
-                    <p class="text-4xl font-black text-primary tracking-tighter text-right text-right">Dial <a href="tel:211" class="hover:underline">2-1-1</a></p>
+                    <p class="text-4xl font-black text-primary tracking-tighter text-right text-right">Dial <a href="tel:211" class="hover:underline text-right text-right text-right">2-1-1</a></p>
                 </div>
             </div>
             <div class="bg-slate-50 p-8 text-center border-t border-slate-100 text-center text-center text-center text-center text-center text-center text-center">
@@ -391,50 +390,87 @@
             { id: 'health_advocacy', name: 'Health & Advocacy', icon: '🩺', color: 'bg-indigo-50 text-indigo-800 border-indigo-200', needs: ["Neurodiversity/Autism support", "Developmental delay screenings (age 0-3)", "Free or mobile medical clinic", "Rural healthcare access", "Tobacco cessation support", "Dental care for children", "Vision exams or glasses assistance"] },
             { id: 'mental_health', name: 'Mental Health & Recovery', icon: '🧠', color: 'bg-purple-50 text-purple-800 border-purple-200', needs: ["Mental health crisis and stabilization", "Maternal mental health (postpartum)", "Free crisis counseling", "Substance use prevention (youth)", "Trauma, EMDR, or Play Therapy", "Sexual abuse treatment program (SATP)", "Mental health support groups"] },
             { id: 'edu_career', name: 'Education & Support', icon: '📚', color: 'bg-amber-50 text-amber-800 border-amber-100', needs: ["Free after-school tutoring (Title 1)", "Literacy tutoring", "IEP or 504 plan school support", "Adult education or GED classes", "Library services/ESOL"] },
-            { id: 'safety_advocacy', name: 'Safety & Advocacy', icon: '🛡️', color: 'bg-red-50 text-red-800 border-red-100', needs: ["Domestic violence assistance", "Child advocacy (survivors of abuse)", "Child welfare medical evaluations", "Family preservation navigators", "Civil legal aid (evictions/family law)", "Youth crisis shelter (10-17)", "Underserved/Spanish Support"] },
+            { id: 'safety_advocacy', name: 'Safety & Advocacy', icon: '🛡️', color: 'bg-red-50 text-red-800 border-red-100', needs: ["Domestic violence assistance", "Child advocacy (survivors of abuse)", "Civil legal aid (evictions/family law)", "Underserved/Spanish Support", "Youth crisis shelter (10-17)", "Family preservation navigators", "Child welfare medical evaluations"] },
             { id: 'trans_access', name: 'Transportation & Access', icon: '🚌', color: 'bg-slate-50 text-slate-800 border-slate-200', needs: ["Vehicle repair assistance", "Transportation disadvantaged door-to-door rides", "Bicycle access for commuting", "Medicaid transportation assistance"] }
         ];
 
         const resources = [
             // Housing & Financial
-            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Alachua County Social Services', contact: '(352) 264-6750', link: 'https://alachuacounty.us/Depts/CSS/SocialServices/Pages/SocialServices.aspx', guide: 'Limited assistance every 2 years. Documentation: Residency proof + 60 days income.' },
-            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Catholic Charities Bureau', contact: '(352) 372-0294', link: 'https://www.catholiccharitiesgainesville.org/', guide: 'Call Friday at 9AM sharp for appointment. Slots typically fill within minutes.' },
-            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Salvation Army', contact: '(352) 376-1743', link: 'https://salvationarmyflorida.org/gainesville/', guide: 'Seasonal rent assistance. Verification of emergency (e.g. eviction notice) required.' },
-            { cat: 'housing_fin', need: 'Help with utility bills (electric, water, gas)', agency: 'GCM Utility Assistance', contact: '(352) 372-8646', link: 'https://www.gcmhelps.org/', guide: 'GRU help for shut-off notice. Tuesdays 8:00 AM - 8:30 AM only.' },
-            { cat: 'housing_fin', need: 'Home weatherization/Energy efficiency', agency: 'Community Weatherization Coalition', contact: '(352) 450-4965', link: 'https://communityweatherization.org/', guide: 'Free energy audits and minor repairs for low-income residents.' },
-            { cat: 'housing_fin', need: 'Help applying for disability, social security benefits, TANF, Unemployment, etc.', agency: 'Florida DCF / MyACCESS', contact: '(850) 300-4323', link: 'https://www.myflorida.com/accessflorida/', guide: 'Primary state portal for SNAP, TANF, Medicaid. Local office: 1000 NE 16th Ave.' },
-            { cat: 'housing_fin', need: 'Disability appeals', agency: 'Center for Independent Living', contact: '(352) 378-7474', link: 'https://cilncf.org/', guide: 'Advocacy for SSI/SSDI application and appeal processes.' },
+            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Alachua County Social Services', contact: '(352) 264-6750', link: 'https://alachuacounty.us/Depts/CSS/SocialServices/Pages/SocialServices.aspx', guide: 'Limited assistance every 2 years. Documentation: Residency proof + 60 days income history.' },
+            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Catholic Charities Bureau', contact: '(352) 372-0294', link: 'https://www.catholiccharitiesgainesville.org/', guide: 'Call Friday at 9AM sharp for appointment. Slots typically fill within minutes each week.' },
+            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Salvation Army', contact: '(352) 376-1743', link: 'https://salvationarmyflorida.org/gainesville/', guide: 'Seasonal rent assistance. Verification of emergency (eviction notice) required.' },
+            { cat: 'housing_fin', need: 'Assistance with past-due rent or mortgage', agency: 'Gainesville Housing Authority', contact: '(352) 872-5500', link: 'https://www.gainesvilleha.org/', guide: 'Section 8 and public housing programs. Check website for waitlist status.' },
+            { cat: 'housing_fin', need: 'Help with utility bills (electric, water, gas)', agency: 'GCM Utility Assistance', contact: '(352) 372-8646', link: 'https://www.gcmhelps.org/', guide: 'Only for GRU customers with shut-off notice. Call Tuesday 8:00 AM - 8:30 AM.' },
+            { cat: 'housing_fin', need: 'Home weatherization/Energy efficiency', agency: 'Community Weatherization Coalition', contact: '(352) 450-4965', link: 'https://communityweatherization.org/', guide: 'Focuses on long-term bill reduction through free home energy audits and repairs.' },
+            { cat: 'housing_fin', need: 'Help applying for disability, social security benefits, TANF, Unemployment, etc.', agency: 'Florida DCF / MyACCESS', contact: '(850) 300-4323', link: 'https://www.myflorida.com/accessflorida/', guide: 'State portal for SNAP/TANF. Visit 1000 NE 16th Ave for in-person kiosks.' },
+            { cat: 'housing_fin', need: 'Disability appeals', agency: 'Center for Independent Living', contact: '(352) 378-7474', link: 'https://cilncf.org/', guide: 'Advocacy for individuals with disabilities managing SSI/SSDI application/appeals.' },
+            { cat: 'housing_fin', need: 'Help paying for childcare or VPK (e.g., school readiness vouchers)', agency: 'Early Learning Coalition (ELC)', contact: '(352) 375-4110', link: 'https://www.elcalachua.org/', guide: 'Must work/attend school 20+ hours per week. Apply via Family Portal.' },
+            { cat: 'housing_fin', need: 'Support for pregnancy or families with infants (0-3 years old)', agency: 'Healthy Families Alachua', contact: '(352) 294-5530', link: 'https://www.healthyfamiliesfla.org/', guide: 'Home-visiting program focused on parenting support and infant developmental screenings.' },
 
             // Food & Supplies
             { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'Bread of the Mighty Food Bank', contact: '(352) 336-0839', link: 'https://breadofthemighty.org/', guide: 'County food hub. Real-time map of mobile pantries on website.' },
-            { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'St. Francis House', contact: '(352) 378-9079', link: 'https://stfrancishousegnv.org/', guide: 'Hot soup kitchen at 413 S. Main St. No income proof required for daily meals.' },
-            { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'Gainesville Free Grocery Store', contact: '(352) 214-4112', link: 'https://www.facebook.com/GainesvilleFreeGroceryStore/', guide: 'Dignity-focused user choice pantry in SW Gainesville.' },
-            { cat: 'food_supplies', need: 'Resource Centers (Pantries)', agency: 'Library Partnership (NE)', contact: '(352) 334-0160', link: 'https://pfsf.org/', guide: 'NE GNV Hub. On-site food pantry and regular diaper distribution.' },
-            { cat: 'food_supplies', need: 'Resource Centers (Pantries)', agency: 'SWAG Family Center (SW)', contact: '(352) 505-6823', link: 'https://swagherenow.org/', guide: 'SW GNV Hub. Integrated community services and clothing closet.' },
+            { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'St. Francis House', contact: '(352) 378-9079', link: 'https://stfrancishousegnv.org/', guide: 'Daily soup kitchen at 413 S. Main St. No income proof required for daily hot meals.' },
+            { cat: 'food_supplies', need: 'Access to a food pantry or emergency food assistance', agency: 'Gainesville Free Grocery Store', contact: '(352) 214-4112', link: 'https://www.facebook.com/GainesvilleFreeGroceryStore/', guide: 'Choice-based dignity pantry in SW Gainesville focusing on fresh produce.' },
+            { cat: 'food_supplies', need: 'Resource Centers (Pantries)', agency: 'Library Partnership (NE)', contact: '(352) 334-0160', link: 'https://pfsf.org/', guide: 'NE GNV Hub. On-site food pantry, benefit navigators, and diaper distributions.' },
+            { cat: 'food_supplies', need: 'Resource Centers (Pantries)', agency: 'SWAG Family Center (SW)', contact: '(352) 505-6823', link: 'https://swagherenow.org/', guide: 'SW GNV Hub. Community navigators, food pantry, and free clothing closet.' },
+            { cat: 'food_supplies', need: 'Nutrition education and low-cost meal planning', agency: 'UF/IFAS EFNEP', contact: '(352) 337-6209', link: 'https://efnep.ifas.ufl.edu/', guide: 'FREE UF lessons on healthy, low-cost meal planning for families with children.' },
+            { cat: 'food_supplies', need: 'Diapers, wipes, or baby formula', agency: 'Library Partnership (PSF)', contact: '(352) 334-0160', link: 'https://pfsf.org/', guide: 'Hosts monthly "Bundle of Joy" events for diaper distribution. Call for schedule.' },
+            { cat: 'food_supplies', need: 'Clothing for children or adults', agency: 'SWAG Resource Center', contact: '(352) 505-6823', link: 'https://swagherenow.org/', guide: 'Free closet open every Tuesday. Call first to verify current sizing stock.' },
 
             // Health & Advocacy
-            { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Equal Access Clinic', contact: '(352) 273-9425', link: 'https://equalaccess.med.ufl.edu/', guide: 'Student-run free clinic rotating nightly (Mon-Thurs). No insurance needed.' },
-            { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Rahma Mercy Clinic', contact: '(352) 414-7493', link: 'https://rahmaclinic.com/', guide: 'Free primary and specialty care for uninsured/low-income residents.' },
+            { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Equal Access Clinic', contact: '(352) 273-9425', link: 'https://equalaccess.med.ufl.edu/', guide: 'Student-run free clinic rotating nights between SWAG, Main St, and Downtown locations. No insurance needed.' },
+            { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Rahma Mercy Clinic', contact: '(352) 414-7493', link: 'https://rahmaclinic.com/', guide: 'Free primary and specialty healthcare for uninsured and low-income Alachua County residents.' },
             { cat: 'health_advocacy', need: 'Free or mobile medical clinic', agency: 'Helping Hands Clinic', contact: '(352) 519-5542', link: 'https://hhgnv.org/', guide: 'Care for homeless/underserved. M/Th evenings at First United Methodist.' },
             { cat: 'health_advocacy', need: 'Rural healthcare access', agency: 'ACORN Clinic', contact: '(352) 485-1133', link: 'https://acornclinic.org/', guide: 'Sliding scale medical/dental for rural families in North Alachua.' },
-            { cat: 'health_advocacy', need: 'Tobacco cessation support', agency: 'Tobacco Free Alachua', contact: '(352) 334-7914', link: 'http://tobaccofreealachua.org/', guide: 'Free resources and support groups to quit smoking or vaping.' },
+            { cat: 'health_advocacy', need: 'Tobacco cessation support', agency: 'Tobacco Free Alachua', contact: '(352) 334-7914', link: 'http://tobaccofreealachua.org/', guide: 'Free resources and peer support groups for those wishing to quit smoking or vaping.' },
+            { cat: 'health_advocacy', need: 'Neurodiversity/Autism support', agency: 'UF CARD', contact: '(352) 265-2230', link: 'https://card.ufl.edu/', guide: 'Free consultation and training for families managing ASD or neurodivergence.' },
             { cat: 'health_advocacy', need: 'Dental care for children', agency: 'UF Saving Smiles', contact: '(352) 273-5971', link: 'https://dental.ufl.edu/', guide: 'Preventive cleanings at Title 1 school clinics.' },
+            { cat: 'health_advocacy', need: 'Vision exams or glasses assistance', agency: 'GCM Vision Clinic', contact: '(352) 372-8162', link: 'https://www.gcmhelps.org/', guide: 'Quarterly clinic. Register during GCM pantry hours to join waitlist.' },
+            { cat: 'health_advocacy', need: 'Developmental delay screenings (age 0-3)', agency: 'Early Steps', contact: '(352) 273-8555', link: 'https://pediatrics.med.ufl.edu/', guide: 'Evaluation provided at no cost for children with suspected delays.' },
+            { cat: 'health_advocacy', need: 'Specialized pediatric services', agency: 'Children’s Medical Services', contact: '(352) 334-1400', link: 'https://www.cms-kids.com/', guide: 'Care management for children with complex or chronic conditions.' },
 
             // Mental Health & Recovery
             { cat: 'mental_health', need: 'Mental health crisis and stabilization', agency: 'Meridian Access Center', contact: '(352) 374-5600', link: 'https://www.mbhci.org/', guide: '24/7 Baker Act/detox intake and behavioral health triage.' },
             { cat: 'mental_health', need: 'Free crisis counseling', agency: 'Alachua Crisis Center', contact: '(352) 264-6789', link: 'https://www.alachuacounty.us/depts/css/crisiscenter/', guide: 'Free counselor support. Phone counseling and in-person sessions.' },
             { cat: 'mental_health', need: 'Trauma, EMDR, or Play Therapy', agency: 'Village Counseling Center (VCC)', contact: '(352) 373-8189', link: 'https://villagecounselingcenter.net/', guide: 'Clinical trauma experts. Grant slots for child welfare often available.' },
+            { cat: 'mental_health', need: 'Mental health support groups', agency: 'NAMI Gainesville', contact: '(352) 374-5600', link: 'https://namigainesville.org/', guide: 'Free, peer-led support groups and classes for families managing conditions.' },
+            { cat: 'mental_health', need: 'Maternal mental health (postpartum)', agency: 'Healthy Start Coalition', contact: '(352) 337-1200', link: 'https://healthystartncf.org/', guide: 'Perinatal support and screenings for postpartum depression and anxiety.' },
+            { cat: 'mental_health', need: 'Sexual abuse treatment program (SATP)', agency: 'UF SATP / Child Protection', contact: '(352) 334-1300', link: 'https://pediatrics.med.ufl.edu/', guide: 'Clinical therapy for children survivors of sexual victimization.' },
+            { cat: 'mental_health', need: 'Substance use prevention (youth)', agency: 'CDS Family & Behavioral', contact: '(352) 244-0628', link: 'https://www.cdsfl.org/', guide: 'Counseling and prevention for youth managing behavioral/substance issues.' },
 
-            // Safety & Advocacy
-            { cat: 'safety_advocacy', need: 'Domestic violence assistance', agency: 'Peaceful Paths', contact: '(352) 377-8255', link: 'https://www.peacefulpaths.org/', guide: '24/7 safety helpline, residential shelter, and survivor advocacy.' },
-            { cat: 'safety_advocacy', need: 'Civil legal aid (evictions/family law)', agency: 'Three Rivers Legal Services', contact: '(866) 256-8091', link: 'https://www.trls.org/', guide: 'Free civil legal help (evictions, injunctions, welfare advocacy).' },
-            { cat: 'safety_advocacy', need: 'Underserved/Spanish Support', agency: 'Project SALUD (RWHP)', contact: '(352) 575-8024', link: 'https://rwhp.org/project-salud.html', guide: 'Spanish-language navigation for healthcare and community services.' }
+            // Education & Support
+            { cat: 'edu_career', need: 'Literacy tutoring', agency: 'Kids Count Alachua', contact: '(352) 244-9723', link: 'http://Kidscountalachua.org', guide: 'After-school support focusing on literacy for Duval and Hidden Oaks students. Includes educational advocacy.' },
+            { cat: 'edu_career', need: 'IEP or 504 plan school support', agency: 'Project 10 / FDLRS', contact: '(352) 671-6051', link: 'https://www.fdlrs.org/', guide: 'Special Education parent liaisons help families navigate rights and attend school IEP/504 meetings.' },
+            { cat: 'edu_career', need: 'Adult education or GED classes', agency: 'Alachua Adult Education', contact: '(352) 955-7035', link: 'https://www.sbac.edu/adulted', guide: 'Preparation classes held at Horizon Center. Inquire about scholarships available for testing fees.' },
+            { cat: 'edu_career', need: 'Library services/ESOL', agency: 'Alachua County Library District', contact: '(352) 334-3900', link: 'https://www.aclib.us/', guide: 'Community learning hub. Offers free ESOL conversation groups, public computer access, and literacy tutoring.' },
+            { cat: 'edu_career', need: 'Free after-school tutoring (Title 1)', agency: '21st Century CCLC', contact: '(352) 955-7628', link: 'https://www.sbac.edu/21stcentury', guide: 'After-school support at Metcalfe, Rawlings, Idylwild. Includes academic tutoring, healthy supper, and enrichment.' },
+
+            // Safety & Advocacy - Strict Mappings
+            { cat: 'safety_advocacy', need: 'Domestic violence assistance', agency: 'Peaceful Paths', contact: '(352) 377-8255', link: 'https://www.peacefulpaths.org/', guide: 'DV safety network hub. 24/7 helpline, emergency residential shelter, and legal advocacy for domestic violence survivors.' },
+            { cat: 'safety_advocacy', need: 'Child advocacy (survivors of abuse)', agency: 'Child Advocacy Center (CAC)', contact: '(352) 376-9161', link: 'https://childadvocacycentergainesville.org/', guide: 'Forensic interviews and clinical support. Provides victim advocacy and play therapy for child abuse survivors.' },
+            { cat: 'safety_advocacy', need: 'Child advocacy (survivors of abuse)', agency: 'UF Child Protection Team', contact: '(352) 334-1300', link: 'https://pediatrics.med.ufl.edu/', guide: 'Medical and forensic examinations for child welfare cases involving suspected abuse.' },
+            { cat: 'safety_advocacy', need: 'Civil legal aid (evictions/family law)', agency: 'Three Rivers Legal Services', contact: '(866) 256-8091', link: 'https://www.trls.org/', guide: 'Free civil legal assistance for low-income residents regarding evictions, family law, and welfare advocacy.' },
+            { cat: 'safety_advocacy', need: 'Underserved/Spanish Support', agency: 'Project SALUD (RWHP)', contact: '(352) 575-8024', link: 'https://rwhp.org/project-salud.html', guide: 'Spanish-language coordination hub. Culturally competent help navigating healthcare and social service systems.' },
+            { cat: 'safety_advocacy', need: 'Youth crisis shelter (10-17)', agency: 'CDS Interface Shelter', contact: '(352) 244-0628', link: 'https://www.cdsfl.org/', guide: 'Temporary residential safe haven for runaways or youth (10-17) facing severe family conflict.' },
+            { cat: 'safety_advocacy', need: 'Child welfare medical evaluations', agency: 'UF Child Protection Team', contact: '(352) 334-1300', link: 'https://pediatrics.med.ufl.edu/', guide: 'Forensic evaluation center. Medical and psychological examinations for child welfare cases.' },
+            { cat: 'safety_advocacy', need: 'Family preservation navigators', agency: 'Partnership for Strong Families', contact: '(352) 672-1608', link: 'https://pfsf.org/', guide: 'Neighborhood navigators focused on family stability and prevention of system entry.' },
+
+            // Transportation
+            { cat: 'trans_access', need: 'Transportation disadvantaged door-to-door rides', agency: 'MV Transportation', contact: '(352) 375-2784', link: 'https://www.google.com/search?q=MV+Transportation+Gainesville', guide: 'Reduced-rate ($2-$3) door-to-door rides for disabled or barriered residents. Pre-registration required.' },
+            { cat: 'trans_access', need: 'Bicycle access for commuting', agency: 'Freewheel Project', contact: '(352) 281-5445', link: 'https://www.freewheelproject.org/', guide: 'Sustainable transit support. Reconditioned bicycles for low-income residents for work or school commutes.' },
+            { cat: 'trans_access', need: 'Vehicle repair assistance', agency: 'Labor of Love (GCM)', contact: '(352) 372-8162', link: 'https://www.gcmhelps.org/', guide: 'Working family transit support. Minor vehicle repairs for residents with employment and valid registration.' },
+            { cat: 'trans_access', need: 'Medicaid transportation assistance', agency: 'Medicaid Ride Booking', contact: 'Check ID Card', link: 'https://www.flmedicaidmanagedcare.com/', guide: 'Book non-emergency medical transit at least 48 hours in advance through your specific plan provider.' }
         ];
 
         let selectedNeeds = new Set();
         let historyData = [];
         let isHistoryUnlocked = false;
         const AGENCY_PWD = "VCC123";
+
+        function toggleInstallGuide() {
+            const guide = document.getElementById('install-guide');
+            guide.classList.toggle('hidden');
+        }
 
         function switchView(v) {
             if (v === 'history' && !isHistoryUnlocked) { openPasswordModal(); return; }
@@ -502,7 +538,6 @@
             const queryText = document.getElementById('global-search').value.toLowerCase();
             const grid = document.getElementById('resource-grid');
             const filtered = resources.filter(r => {
-                const cat = categories.find(c => c.id === r.cat);
                 const matchesCat = activeCat === 'all' || r.cat === activeCat;
                 const matchesQuery = r.agency.toLowerCase().includes(queryText) || r.need.toLowerCase().includes(queryText);
                 return matchesCat && matchesQuery;
@@ -514,11 +549,11 @@
                 <div class="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden card-hover flex flex-col h-full text-left">
                     <div class="p-6 flex-grow">
                         <div class="flex justify-between items-start mb-4">
-                            <span class="${cat.color} px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border">${cat.name}</span>
-                            <a href="${r.link}" target="_blank" class="text-primary hover:text-accent text-xl transition">🌐</a>
+                            <span class="${cat.color} px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border text-left">${cat.name}</span>
+                            <a href="${r.link}" target="_blank" class="text-primary hover:text-accent text-xl transition" aria-label="Visit website">🌐</a>
                         </div>
                         <h3 class="text-lg font-black text-primary leading-tight mb-1 text-left">${r.agency}</h3>
-                        <p class="text-[10px] font-semibold text-secondary mb-1.5 leading-tight">${r.need}</p>
+                        <p class="text-[10px] font-semibold text-secondary mb-1.5 leading-tight text-left">${r.need}</p>
                         <div class="text-[9px] text-gray-500 flex flex-col gap-0.5 italic text-left">
                            <span>📞 <a href="${getTelLink(r.contact)}" class="hover:underline font-bold text-primary">${r.contact}</a></span>
                            <span class="break-all">🌐 <a href="${r.link}" target="_blank" class="hover:underline text-primary/70">${r.link}</a></span>
@@ -538,13 +573,13 @@
                 form.innerHTML += `
                 <div class="mb-2 bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 text-left transition hover:border-accent">
                     <h4 class="font-black text-primary text-base mb-4 border-b-2 pb-2 uppercase tracking-widest flex items-center gap-2">
-                        <span class="bg-white p-1 rounded shadow-sm">${cat.icon}</span> ${cat.name}
+                        <span class="bg-white p-1 rounded shadow-sm text-left">${cat.icon}</span> ${cat.name}
                     </h4>
                     <div class="space-y-2">
                         ${cat.needs.map(n => `
                             <label class="flex items-start text-base p-1 rounded hover:bg-white hover:shadow-sm cursor-pointer transition">
                                 <input type="checkbox" value="${n}" onchange="toggleNeed(this)" class="mt-1 mr-3 h-4 w-4 rounded text-primary border-slate-300 focus:ring-accent transition"> 
-                                <span class="leading-snug text-slate-700 font-semibold">${n}</span>
+                                <span class="leading-snug text-slate-700 font-semibold text-left">${n}</span>
                             </label>`).join('')}
                     </div>
                 </div>`;
@@ -554,7 +589,7 @@
         function toggleNeed(checkbox) { if(checkbox.checked) selectedNeeds.add(checkbox.value); else selectedNeeds.delete(checkbox.value); }
 
         async function submitAndGeneratePlan() {
-            if (selectedNeeds.size === 0) return alert("Select needs first.");
+            if (selectedNeeds.size === 0) return;
             const matching = resources.filter(r => selectedNeeds.has(r.need));
             const nameValue = document.getElementById('client-id').value || "CLIENT REF";
             
@@ -567,26 +602,26 @@
             grid.innerHTML = matching.map(r => `
                 <div class="bg-white p-6 rounded-xl border-l-[8px] border-primary shadow-sm text-left mb-6 agency-card text-left">
                     <div class="mb-3 text-left">
-                        <h4 class="font-black text-primary text-xl leading-tight uppercase tracking-tight mb-1">${r.agency}</h4>
-                        <div class="flex items-center gap-2 text-slate-500 font-bold uppercase text-[10px] tracking-widest">
+                        <h4 class="font-black text-primary text-xl leading-tight uppercase tracking-tight mb-1 text-left text-left">${r.agency}</h4>
+                        <div class="flex items-center gap-2 text-slate-500 font-bold uppercase text-[10px] tracking-widest text-left">
                             <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-600">Goal</span> ${r.need}
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 text-left">
-                            <p class="text-[9px] text-primary/60 font-black uppercase mb-0.5">Contact Info</p>
-                            <p class="text-lg text-primary font-black tracking-tight"><a href="${getTelLink(r.contact)}" class="hover:underline">${r.contact}</a></p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-left">
+                        <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 text-left text-left">
+                            <p class="text-[9px] text-primary/60 font-black uppercase mb-0.5 text-left text-left">Contact Info</p>
+                            <p class="text-lg text-primary font-black tracking-tight text-left text-left"><a href="${getTelLink(r.contact)}" class="hover:underline">${r.contact}</a></p>
                         </div>
-                        <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 overflow-hidden text-left">
-                            <p class="text-[9px] text-primary/60 font-black uppercase mb-0.5">Website</p>
-                            <a href="${r.link}" target="_blank" class="text-sm text-primary font-bold underline break-all-content">${r.link}</a>
+                        <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 overflow-hidden text-left text-left">
+                            <p class="text-[9px] text-primary/60 font-black uppercase mb-0.5 text-left text-left">Website</p>
+                            <a href="${r.link}" target="_blank" class="text-sm text-primary font-bold underline break-all-content text-left text-left">${r.link}</a>
                         </div>
                     </div>
 
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 text-left">
-                        <p class="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Staff Guidance</p>
-                        <p class="text-sm text-slate-700 leading-relaxed font-medium italic break-all-content">"${r.guide}"</p>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 text-left text-left text-left text-left">
+                        <p class="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1 text-left text-left text-left">Staff Guidance</p>
+                        <p class="text-sm text-slate-700 leading-relaxed font-medium italic break-all-content text-left text-left text-left">${r.guide}</p>
                     </div>
                 </div>`).join('');
             
@@ -599,7 +634,7 @@
                         clientId: nameValue, needs: Array.from(selectedNeeds), timestamp: new Date().toISOString()
                     });
                 }
-            } catch (e) { console.error("Database error", e); }
+            } catch (e) { console.error("Database sync error", e); }
         }
 
         function triggerPrint() {
@@ -621,13 +656,13 @@
             const list = document.getElementById('history-list');
             if (historyData.length === 0) { list.innerHTML = '<p class="text-gray-400 italic text-center py-4 text-[10px]">No data available.</p>'; return; }
             list.innerHTML = historyData.map(h => `
-                <div class="border-b py-3 px-4 hover:bg-slate-50 transition border-gray-100 text-left">
-                    <div class="flex justify-between items-start">
-                        <span class="font-bold text-xs text-primary">${h.clientId}</span>
-                        <span class="text-[8px] text-gray-400 font-semibold uppercase tracking-tighter text-right">${new Date(h.timestamp).toLocaleDateString()}</span>
+                <div class="border-b py-3 px-4 hover:bg-slate-50 transition border-gray-100 text-left text-left text-left">
+                    <div class="flex justify-between items-start text-left text-left text-left">
+                        <span class="font-bold text-xs text-primary text-left text-left text-left">${h.clientId}</span>
+                        <span class="text-[8px] text-gray-400 font-semibold uppercase tracking-tighter text-right text-left text-left text-left">${new Date(h.timestamp).toLocaleDateString()}</span>
                     </div>
-                    <div class="flex flex-wrap gap-0.5 mt-1">
-                        ${h.needs.map(n => `<span class="bg-blue-50 text-primary text-[8px] px-1 py-0.5 rounded border border-blue-100 font-medium">${n}</span>`).join('')}
+                    <div class="flex flex-wrap gap-0.5 mt-1 text-left text-left text-left">
+                        ${h.needs.map(n => `<span class="bg-blue-50 text-primary text-[8px] px-1 py-0.5 rounded border border-blue-100 font-medium text-left text-left text-left">${n}</span>`).join('')}
                     </div>
                 </div>`).join('');
         }
